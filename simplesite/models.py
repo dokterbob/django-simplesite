@@ -15,6 +15,8 @@ class Page(TitleAbstractBase, DateAbstractBase):
     
     class Meta:
         ordering = ['title',]
+        verbose_name = _('page')
+        verbose_name_plural = _('pages')
 
 
 def get_next_ordering(cls):
