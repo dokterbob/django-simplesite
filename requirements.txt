@@ -1,0 +1,2 @@
+django-tinymce
+-e git://github.com/dokterbob/django-metadata.git#egg=django-metadata
