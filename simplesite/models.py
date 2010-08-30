@@ -49,6 +49,11 @@ class Menu(MenuBase):
         verbose_name = _('menu item')
         verbose_name_plural = _('menu items')
         ordering = ['ordering', ]
+    
+    def get_absolute_url(self):
+        from django.core.urlresolvers import reverse
+        return reverse('menu', urlconf='simplesite.urls',
+                       kwargs={'menu_slug':self.slug})
 
 
 class Submenu(MenuBase):
@@ -63,4 +68,10 @@ class Submenu(MenuBase):
         verbose_name_plural = _('submenu items')
     
     menu = models.ForeignKey(Menu)
+
+    def get_absolute_url(self):
+        from django.core.urlresolvers import reverse
+        return reverse('menu', urlconf='simplesite.urls',
+                       kwargs={'menu_slug':self.menu.slug,
+                               'submenu_slug':self.slug})
 
