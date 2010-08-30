@@ -31,7 +31,7 @@ class BaseMenuAdmin(admin.ModelAdmin):
     
     
 class MenuAdmin(BaseMenuAdmin):
-    list_display = ('ordering', 'title', 'slug', 'admin_page', 'admin_submenu')
+    list_display = ('ordering', 'title', 'slug', 'visible', 'admin_page', 'admin_submenu')
     list_filter = ('visible', )
 
     def admin_submenu(self, obj):
@@ -44,7 +44,7 @@ class MenuAdmin(BaseMenuAdmin):
     admin_submenu.allow_tags = True
     
 class SubmenuAdmin(BaseMenuAdmin):
-    list_display = ('ordering', 'title', 'slug', 'admin_page', 'admin_menu')
+    list_display = ('ordering', 'title', 'slug', 'visible', 'admin_page', 'admin_menu')
     list_filter = ('visible', 'menu', )
      
     def admin_menu(self, obj):
