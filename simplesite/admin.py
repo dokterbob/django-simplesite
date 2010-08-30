@@ -19,6 +19,7 @@ class SubmenuInline(admin.StackedInline):
     
 class BaseMenuAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
+    list_display_links = ('title',)
 
     def admin_page(self, obj):
         if obj.page:
