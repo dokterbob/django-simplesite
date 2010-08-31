@@ -1,3 +1,5 @@
+from django.http import Http404
+
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
@@ -18,6 +20,11 @@ def page(request, menu_slug, submenu_slug=None):
     # 4)a If so, continue.
     # 4)b If not: raise 404 or some other error (design decision). 
     context = RequestContext(request)
-    return render_to_response('simplesite/page.html', request)
+    
+    menu = getattr(context, 'menu_current', None)
+    if not menu or not menu.page:
+        raise Http404
+    
+    return render_to_response('simplesite/page.html', context)
 
     
