@@ -26,7 +26,7 @@ def menu(request):
         view, args, kwargs = resolve(request.path, urlconf='simplesite.urls')
         logging.debug('menu url matched: args=%s, kwargs=%s', args, kwargs)
 
-        menu_slug = getattr(kwargs, 'menu_slug', None)
+        menu_slug = kwargs.get('menu_slug')
         if menu_slug:
             logging.debug('menu_slug=%s', menu_slug)
             menu_obj = menu_visible.get(slug=menu_slug)
@@ -38,7 +38,7 @@ def menu(request):
             menu_dict.update({'menu_current': menu_obj,
                               'submenu_list': submenu_visible})
     
-            submenu_slug = getattr(kwargs, 'submenu_slug', None)
+            submenu_slug = kwargs.get('submenu_slug')
             if submenu_slug:
                 logging.debug('submenu_slug=%s', submenu_slug)
                 submenu_obj = submenu_visible.get(slug=submenu_slug)
