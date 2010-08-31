@@ -1,3 +1,5 @@
+import logging
+
 from django.http import Http404
 
 from django.shortcuts import render_to_response
@@ -13,15 +15,12 @@ def page(request, menu_slug, submenu_slug=None):
         elsewhere in the URL space. 
     """
     
-    # TODO: FINISH THIS
-    # 1) Assert the menu context_processor is present
-    # 2) Fetch the current menu and submenu from the context
-    # 3) See whether there's a corresponding page
-    # 4)a If so, continue.
-    # 4)b If not: raise 404 or some other error (design decision). 
+    logging.debug('No other view found, resorting to page view with \
+                   menu_slug=%s and submenu_slug=%s.' % (menu_slug, submenu_slug))
+
     context = RequestContext(request)
     
-    menu = getattr(context, 'menu_current', None)
+    menu = context.get('menu_current')
     if not menu or not menu.page:
         raise Http404
     

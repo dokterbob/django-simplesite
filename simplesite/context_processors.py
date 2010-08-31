@@ -20,16 +20,14 @@ def menu(request):
     menu_dict = {'menu_list': menu_visible }
                  
     try:    
-        # Use the urlspace configuration from urls.py to
-        # resolve menu_slug and submenu_slug parameters
-        # FIXME
         view, args, kwargs = resolve(request.path, urlconf='simplesite.urls')
         logging.debug('menu url matched: args=%s, kwargs=%s', args, kwargs)
 
         menu_slug = kwargs.get('menu_slug')
         if menu_slug:
-            logging.debug('menu_slug=%s', menu_slug)
             menu_obj = menu_visible.get(slug=menu_slug)
+            logging.debug('menu=%s', menu_obj)
+
             
             # Find the corresponding submenu items
             submenu_visible = Submenu.objects.filter(visible=True,
@@ -37,19 +35,19 @@ def menu(request):
             
             menu_dict.update({'menu_current': menu_obj,
                               'submenu_list': submenu_visible})
-    
+                              
             submenu_slug = kwargs.get('submenu_slug')
             if submenu_slug:
-                logging.debug('submenu_slug=%s', submenu_slug)
                 submenu_obj = submenu_visible.get(slug=submenu_slug)
+                logging.debug('submenu=%s', submenu_obj)
                 
                 menu_dict.update({'submenu_current': submenu_obj})
                 
-    except (Resolver404, Menu.DoesNotExist, Submenu.DoesNotExist):
+    except (Resolver404, Menu.DoesNotExist, Submenu.DoesNotExist) as e:
         # Resolver404: the URL pattern doesn't match any URL
         # Menu.DoesNotExist: the menu_slug found in the URL match any menu
         # Submenu.DoesNotExist: the submenu_slug found doesn't match any submenu
         
-        logging.debug('Current menu item not identified')
+        logging.debug('Current menu item not identified, error: %s' % e)
     
     return menu_dict
