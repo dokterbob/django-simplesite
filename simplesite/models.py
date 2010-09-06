@@ -72,7 +72,7 @@ class Submenu(MenuBase):
 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
-        return reverse('menu', urlconf='simplesite.urls',
+        return reverse('submenu', urlconf='simplesite.urls',
                        kwargs={'menu_slug':self.menu.slug,
                                'submenu_slug':self.slug})
 
