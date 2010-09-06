@@ -31,7 +31,8 @@ class MenuBase(TitleAbstractBase, SlugAbstractBase):
     """ Base class for Menu items """
     
     visible = models.BooleanField(verbose_name=_('visible'),
-                                  default=True, db_index=True)
+                                  default=True, db_index=True,
+                                  help_text=_('Show in menu listings?'))
     page = models.ForeignKey(Page, null=True, blank=True)
     
     class Meta:
