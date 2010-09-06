@@ -5,7 +5,7 @@ from django.contrib import admin
 from tinymce.widgets import TinyMCE
 
 from models import Menu, Submenu, Page
-
+from forms import MenuAdminForm
 
 class PageAdmin(admin.ModelAdmin):
     formfield_overrides = {
@@ -28,6 +28,8 @@ class BaseMenuAdmin(admin.ModelAdmin):
             return ''
     admin_page.short_description = Page._meta.verbose_name
     admin_page.allow_tags = True
+    
+    form = MenuAdminForm
     
     
 class MenuAdmin(BaseMenuAdmin):
