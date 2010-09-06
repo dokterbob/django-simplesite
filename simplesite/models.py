@@ -66,6 +66,7 @@ class Submenu(MenuBase):
     class Meta:
         verbose_name = _('submenu item')
         verbose_name_plural = _('submenu items')
+        ordering = ['ordering', ]
     
     menu = models.ForeignKey(Menu)
 
