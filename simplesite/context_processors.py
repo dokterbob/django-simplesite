@@ -13,11 +13,10 @@ def menu(request):
         - `submenu_list`      A list of visible submenu items for the current menu
     """
     
-    # Only select visible menu items
-    menu_visible = Menu.objects.filter(visible=True)
-    logging.debug('Adding menu items to context: %s', menu_visible)
+    menu_list = Menu.objects.filter()
+    logging.debug('Adding menu items to context: %s', menu_list)
 
-    menu_dict = {'menu_list': menu_visible }
+    menu_dict = {'menu_list': menu_list.filter(visible=True) }
                  
     try:    
         view, args, kwargs = resolve(request.path, urlconf='simplesite.urls')
@@ -25,23 +24,28 @@ def menu(request):
 
         menu_slug = kwargs.get('menu_slug')
         if menu_slug:
-            menu_obj = menu_visible.get(slug=menu_slug)
+            menu_obj = menu_list.get(slug=menu_slug)
             logging.debug('menu=%s', menu_obj)
 
             
             # Find the corresponding submenu items
-            submenu_visible = Submenu.objects.filter(visible=True,
-                                                     menu=menu_obj)
+            submenu_list = Submenu.objects.filter(menu=menu_obj)
             
             menu_dict.update({'menu_current': menu_obj,
-                              'submenu_list': submenu_visible})
+                              'submenu_list': submenu_list.filter(visible=True)})
                               
             submenu_slug = kwargs.get('submenu_slug')
             if submenu_slug:
-                submenu_obj = submenu_visible.get(slug=submenu_slug)
+                submenu_obj = submenu_list.get(slug=submenu_slug)
                 logging.debug('submenu=%s', submenu_obj)
                 
                 menu_dict.update({'submenu_current': submenu_obj})
+                
+                if submenu_obj.page:
+                    menu_dict.update({'page_current': submenu_obj.page})
+            else:
+                if menu_obj.page:
+                    menu_dict.update({'page_current': menu_obj.page})
                 
     except (Resolver404, Menu.DoesNotExist, Submenu.DoesNotExist) as e:
         # Resolver404: the URL pattern doesn't match any URL
