@@ -4,15 +4,15 @@ from django.utils.translation import ugettext_lazy as _
 
 from metadata.models import DateAbstractBase, \
                             TitleAbstractBase, \
-                            SlugAbstractBase 
+                            SlugAbstractBase
 
 class Page(TitleAbstractBase, DateAbstractBase):
     """ Class representing a page with title and contents """
-    
+
     publish = models.BooleanField(verbose_name=_('publish'),
                                   default=True, db_index=True)
     content = models.TextField(verbose_name=_('content'))
-    
+
     class Meta:
         ordering = ['title',]
         verbose_name = _('page')
@@ -26,15 +26,15 @@ def get_next_ordering(cls):
     else:
         return 10
 
-    
+
 class MenuBase(TitleAbstractBase, SlugAbstractBase):
     """ Base class for Menu items """
-    
+
     visible = models.BooleanField(verbose_name=_('visible'),
                                   default=True, db_index=True,
                                   help_text=_('Show in menu listings?'))
     page = models.ForeignKey(Page, null=True, blank=True)
-    
+
     class Meta:
         abstract = True
 
