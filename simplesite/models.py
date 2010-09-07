@@ -45,12 +45,13 @@ class Menu(MenuBase):
     ordering = models.SmallIntegerField(verbose_name=_('ordering'),
                                         default=lambda: get_next_ordering(Menu),
                                         db_index=True)
-    
+
     class Meta:
         verbose_name = _('menu item')
         verbose_name_plural = _('menu items')
         ordering = ['ordering', ]
-    
+        unique_together = ('slug',)
+
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
         return reverse('menu', urlconf='simplesite.urls',
@@ -59,16 +60,17 @@ class Menu(MenuBase):
 
 class Submenu(MenuBase):
     """ Submenu, related to main menu item """
-    
+
     ordering = models.SmallIntegerField(verbose_name=_('ordering'),
                                         default=lambda: get_next_ordering(Submenu),
                                         db_index=True)
-    
+
     class Meta:
         verbose_name = _('submenu item')
         verbose_name_plural = _('submenu items')
         ordering = ['ordering', ]
-    
+        unique_together = ('slug', 'menu')
+
     menu = models.ForeignKey(Menu)
 
     def get_absolute_url(self):
