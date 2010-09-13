@@ -13,6 +13,17 @@ def page(request, menu_slug=None, submenu_slug=None):
         menu RequestContextProcessor, allowing us
         to capture URL's that have not been captured
         elsewhere in the URL space. 
+        
+        Templates are looked for in several directories,
+        making it easy to customize the looks of a particular
+        part of the site:
+        
+        simplesite/page.html
+        simplesite/<menu_current.slug>/page.html
+        simplesite/<menu_current.slug>/<submenu_current.slug>/page.html
+        
+        In these menu, all the variables from the context_processor are
+        fully available, as in other pages within the site.
     """
     
     context = RequestContext(request)
@@ -20,7 +31,19 @@ def page(request, menu_slug=None, submenu_slug=None):
     page = context.get('page_current')
     if not (page and page.publish):
         raise Http404
+        
+    submenu = context.get('submenu_current')
+    menu = context.get('menu_current')
+
+    template_names = []
+    if submenu:
+        template_names.append('simplesite/%s/%s/page.html' % \
+                                (menu.slug, submenu.slug))
+    elif menu:
+        template_names.append('simplesite/%s/page.html' % menu.slug)
     
-    return render_to_response('simplesite/page.html', context)
+    template_names.append('simplesite/page.html')
+    
+    return render_to_response(template_names, context)
 
     
