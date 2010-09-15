@@ -39,10 +39,12 @@ def page(request, menu_slug=None, submenu_slug=None):
     if submenu:
         template_names.append('simplesite/%s/%s/page.html' % \
                                 (menu.slug, submenu.slug))
-    elif menu:
+    if menu:
         template_names.append('simplesite/%s/page.html' % menu.slug)
     
     template_names.append('simplesite/page.html')
+    
+    logging.debug('Searching for templates in %s' % template_names)
     
     return render_to_response(template_names, context)
 
