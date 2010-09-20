@@ -19,6 +19,19 @@ class Page(TitleAbstractBase, DateAbstractBase):
         verbose_name_plural = _('pages')
 
 
+    def get_absolute_url(self):
+        """ Yield the first related menu item. """
+        
+        if not self.publish:
+            return None
+
+        if self.menu_set.exists():
+            return self.menu_set.all()[0].get_absolute_url()
+        
+        if self.submenu_set.exists():
+            return self.submenu_set.all()[0].get_absolute_url()
+            
+
 def get_next_ordering(cls):
     ordering = cls.objects.aggregate(models.Max('ordering'))['ordering__max']
     if ordering:
