@@ -8,6 +8,8 @@ from django.core.urlresolvers import resolve, Resolver404
 
 from simplesite.views import page as page_view
 
+logger = logging.getLogger('simplesite')
+
 class MenuAdminForm(forms.ModelForm):
     def clean(self):
         page = self.cleaned_data['page']
@@ -23,7 +25,7 @@ class MenuAdminForm(forms.ModelForm):
             
             path += '%s/' % slug
             
-            logging.debug('Checking whether the path %s yields a view in the URL space.' % path)
+            logger.debug('Checking whether the path %s yields a view in the URL space.' % path)
 
             # This should always work.
             try:

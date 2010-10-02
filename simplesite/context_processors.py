@@ -4,6 +4,7 @@ from django.core.urlresolvers import resolve, Resolver404
 
 from simplesite.models import Menu, Submenu
 
+logger = logging.getLogger('simplesite')
 
 def menu(request):
     """ This function puts into the RequestContext:
@@ -19,13 +20,13 @@ def menu(request):
                  
     try:    
         view, args, kwargs = resolve(request.path, urlconf='simplesite.urls')
-        logging.debug('menu url matched: args=%s, kwargs=%s', args, kwargs)
+        logger.debug('menu url matched: args=%s, kwargs=%s', args, kwargs)
 
         menu_slug = kwargs.get('menu_slug')
         if menu_slug:
             menu_obj = menu_list.get(slug=menu_slug)
 
-            logging.debug('menu=%s', menu_obj)
+            logger.debug('menu=%s', menu_obj)
             
             # Find the corresponding submenu items
             submenu_list = Submenu.objects.filter(menu__slug=menu_slug)
@@ -38,7 +39,7 @@ def menu(request):
             if submenu_slug:
                 submenu_obj = submenu_list.get(slug=submenu_slug)
 
-                logging.debug('submenu=%s', submenu_obj)
+                logger.debug('submenu=%s', submenu_obj)
                 
                 menu_dict.update({'submenu_current': submenu_obj})
                 
@@ -53,6 +54,6 @@ def menu(request):
         # Menu.DoesNotExist: the menu_slug found in the URL match any menu
         # Submenu.DoesNotExist: the submenu_slug found doesn't match any submenu
         
-        logging.debug('Current menu item not identified, error: %s' % e)
+        logger.debug('Current menu item not identified, error: %s' % e)
     
     return menu_dict

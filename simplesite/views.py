@@ -7,6 +7,7 @@ from django.template import RequestContext
 
 from simplesite.models import Page, Menu, Submenu
 
+logger = logging.getLogger('simplesite')
 
 def page(request, menu_slug=None, submenu_slug=None):
     """ This is, basically, a wrapper around the 
@@ -44,7 +45,7 @@ def page(request, menu_slug=None, submenu_slug=None):
     
     template_names.append('simplesite/page.html')
     
-    logging.debug('Searching for templates in %s' % template_names)
+    logger.debug('Searching for templates in %s' % template_names)
     
     return render_to_response(template_names, context)
 

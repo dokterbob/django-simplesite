@@ -12,6 +12,8 @@ from tinymce.widgets import TinyMCE
 from models import Menu, Submenu, Page
 from forms import MenuAdminForm
 
+logger = logging.getLogger('simplesite')
+
 class PageAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': TinyMCE},
@@ -26,10 +28,10 @@ class PageAdmin(admin.ModelAdmin):
             except Exception:
                 # Bare 'except' because we could get a variety
                 # of HTTP-related exceptions.
-                logging.warning('Error pinging Google while saving %s.' \
+                logger.warning('Error pinging Google while saving %s.' \
                                     % obj)
         else:
-            logging.debug('Not pinging Google while saving %s, DEBUG=True.' \
+            logger.debug('Not pinging Google while saving %s, DEBUG=True.' \
                             % obj)
 
 
