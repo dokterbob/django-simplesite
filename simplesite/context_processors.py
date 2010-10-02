@@ -14,8 +14,7 @@ def menu(request):
     """
     
     menu_list = Menu.objects.filter()
-    logging.debug('Adding menu items to context: %s', menu_list)
-
+    
     menu_dict = {'menu_list': menu_list.filter(visible=True) }
                  
     try:    
@@ -25,18 +24,20 @@ def menu(request):
         menu_slug = kwargs.get('menu_slug')
         if menu_slug:
             menu_obj = menu_list.get(slug=menu_slug)
-            logging.debug('menu=%s', menu_obj)
 
+            logging.debug('menu=%s', menu_obj)
             
             # Find the corresponding submenu items
-            submenu_list = Submenu.objects.filter(menu=menu_obj)
+            submenu_list = Submenu.objects.filter(menu__slug=menu_slug)
             
             menu_dict.update({'menu_current': menu_obj,
                               'submenu_list': submenu_list.filter(visible=True)})
                               
             submenu_slug = kwargs.get('submenu_slug')
+                        
             if submenu_slug:
                 submenu_obj = submenu_list.get(slug=submenu_slug)
+
                 logging.debug('submenu=%s', submenu_obj)
                 
                 menu_dict.update({'submenu_current': submenu_obj})
