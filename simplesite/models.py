@@ -6,18 +6,24 @@ from metadata.models import DateAbstractBase, \
                             TitleAbstractBase, \
                             SlugAbstractBase
 
-class Page(TitleAbstractBase, DateAbstractBase):
+from multilingual_model.models import MultilingualModel, MultilingualTranslation
+
+class PageTranslation(MultilingualTranslation, TitleAbstractBase):
+    class Meta:
+        unique_together = ('parent', 'language_code')
+
+    parent = models.ForeignKey('Page', related_name='translations')
+    content = models.TextField(verbose_name=_('content'))
+
+class Page(MultilingualModel, DateAbstractBase):
     """ Class representing a page with title and contents """
 
     publish = models.BooleanField(verbose_name=_('publish'),
                                   default=True, db_index=True)
-    content = models.TextField(verbose_name=_('content'))
 
     class Meta:
-        ordering = ['title',]
         verbose_name = _('page')
         verbose_name_plural = _('pages')
-
 
     def get_absolute_url(self):
         """ Yield the first related menu item. """
@@ -40,7 +46,7 @@ def get_next_ordering(cls):
         return 10
 
 
-class MenuBase(TitleAbstractBase, SlugAbstractBase):
+class MenuBase(MultilingualModel, SlugAbstractBase):
     """ Base class for Menu items """
 
     visible = models.BooleanField(verbose_name=_('visible'),
@@ -51,6 +57,11 @@ class MenuBase(TitleAbstractBase, SlugAbstractBase):
     class Meta:
         abstract = True
 
+class MenuTranslation(MultilingualTranslation, TitleAbstractBase):
+    class Meta:
+        unique_together = ('parent', 'language_code')
+
+    parent = models.ForeignKey('Menu', related_name='translations')
 
 class Menu(MenuBase):
     """ Main menu """
@@ -69,6 +80,12 @@ class Menu(MenuBase):
         from django.core.urlresolvers import reverse
         return reverse('menu', urlconf='simplesite.urls',
                        kwargs={'menu_slug':self.slug})
+
+class SubmenuTranslation(MultilingualTranslation, TitleAbstractBase):
+   class Meta:
+       unique_together = ('parent', 'language_code')
+
+   parent = models.ForeignKey('Submenu', related_name='translations')
 
 
 class Submenu(MenuBase):

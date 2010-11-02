@@ -9,15 +9,21 @@ from django.contrib.sitemaps import ping_google
 
 from tinymce.widgets import TinyMCE
 
-from models import Menu, Submenu, Page
+from models import Menu, Submenu, Page, MenuTranslation, SubmenuTranslation, PageTranslation
 from forms import MenuAdminForm
+
+from multilingual_model.admin import TranslationInline
 
 logger = logging.getLogger('simplesite')
 
-class PageAdmin(admin.ModelAdmin):
+class PageTranslationInline(TranslationInline):
+    model = PageTranslation
+
     formfield_overrides = {
         models.TextField: {'widget': TinyMCE},
     }
+
+class PageAdmin(admin.ModelAdmin):
     
     def save_model(self, request, obj, form, change):
         super(PageAdmin, self).save_model(request, obj, form, change)
@@ -33,15 +39,19 @@ class PageAdmin(admin.ModelAdmin):
         else:
             logger.debug('Not pinging Google while saving %s, DEBUG=True.' \
                             % obj)
+    
+    inlines = [PageTranslationInline,]
 
 
-class SubmenuInline(admin.StackedInline):
-    model = Submenu
-    extra = 0
+class MenuTranslationInline(TranslationInline):
+    model = MenuTranslation
+
+class SubmenuTranslationInline(TranslationInline):
+    model = SubmenuTranslation
     
 class BaseMenuAdmin(admin.ModelAdmin):
-    prepopulated_fields = {'slug': ('title',)}
-    list_display_links = ('title',)
+    #prepopulated_fields = {'slug': ('title',)}
+    list_display_links = ('slug',)
 
     def admin_page(self, obj):
         if obj.page:
@@ -52,10 +62,9 @@ class BaseMenuAdmin(admin.ModelAdmin):
     admin_page.allow_tags = True
     
     form = MenuAdminForm
-    
-    
+
 class MenuAdmin(BaseMenuAdmin):
-    list_display = ('ordering', 'title', 'slug', 'visible', 'admin_page', 'admin_submenu')
+    list_display = ('ordering', 'slug', 'visible', 'admin_page', 'admin_submenu')
     list_filter = ('visible', )
 
     def admin_submenu(self, obj):
@@ -66,9 +75,11 @@ class MenuAdmin(BaseMenuAdmin):
             return ''
     admin_submenu.short_description = ''
     admin_submenu.allow_tags = True
+
+    inlines = [MenuTranslationInline, ]
     
 class SubmenuAdmin(BaseMenuAdmin):
-    list_display = ('ordering', 'title', 'slug', 'visible', 'admin_page', 'admin_menu')
+    list_display = ('ordering', 'slug', 'visible', 'admin_page', 'admin_menu')
     list_filter = ('visible', 'menu', )
      
     def admin_menu(self, obj):
@@ -76,6 +87,7 @@ class SubmenuAdmin(BaseMenuAdmin):
     admin_menu.short_description = Menu._meta.verbose_name
     admin_menu.allow_tags = True
 
+    inlines = [SubmenuTranslationInline, ]
 
 admin.site.register(Page, PageAdmin)
 admin.site.register(Menu, MenuAdmin)
