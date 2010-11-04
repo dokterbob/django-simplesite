@@ -24,7 +24,12 @@ class PageTranslationInline(TranslationInline):
     }
 
 class PageAdmin(admin.ModelAdmin):
-    
+    list_display = ('get_title',)
+
+    def get_title(self, obj):
+        return obj.title
+    get_title.short_description = 'Title'
+
     def save_model(self, request, obj, form, change):
         super(PageAdmin, self).save_model(request, obj, form, change)
         
