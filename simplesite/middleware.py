@@ -17,7 +17,7 @@ class SimplesiteFallbackMiddleware(object):
         # Return the original response if any errors happened. Because this
         # is a middleware, we can't assume the errors will be caught elsewhere.
         except Http404:
-            logger.debug('Even simplesite returned a 404 error. Really, you\'re quite fucked up.')
+            logger.debug('Even simplesite returned a 404.')
             return response
         except:
             if settings.DEBUG:
