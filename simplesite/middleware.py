@@ -22,4 +22,8 @@ class SimplesiteFallbackMiddleware(object):
         except:
             if settings.DEBUG:
                 raise
+            else:
+                # Fail silently, but do logging
+                logger.exception('Something went wrong trying to serve a page')
+            
             return response
