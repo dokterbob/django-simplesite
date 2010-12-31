@@ -6,6 +6,7 @@ from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib import admin
 from django.contrib.sitemaps import ping_google
+from django.conf.urls.defaults import patterns, url
 
 from tinymce.widgets import TinyMCE
 
@@ -13,8 +14,11 @@ from sorl.thumbnail.admin import AdminImageWidget, ImageField
 
 from models import Menu, Submenu, Page, PageImage
 from forms import MenuAdminForm
+from utils import ExtendibleModelAdminMixin
 
 logger = logging.getLogger('simplesite')
+
+from tinymce.views import render_to_image_list
 
 
 class PageImageInline(admin.TabularInline):
@@ -28,13 +32,38 @@ class PageImageInline(admin.TabularInline):
     extra = 1
 
 
-class PageAdmin(admin.ModelAdmin):
+class PageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
     inlines = (PageImageInline, )
     
     formfield_overrides = {
-        models.TextField: {'widget': TinyMCE},
+        # TODO: Make this dynamic.
+        models.TextField: {'widget': TinyMCE(mce_attrs={'external_image_list': '/admin/simplesite/page/1/image_list.js'}), },
     }
     
+    def get_image_list(self, request, object_id):
+        """ Get a list of available images for this page for TinyMCE to
+            refer to.
+        """
+        object = self._getobj(request, object_id)
+        
+        images = object.pageimage_set.all()
+        image_list = [(unicode(obj), obj.image.url) for obj in images]
+        
+        return render_to_image_list(image_list)
+     
+    
+    def get_urls(self):
+        urls = super(PageAdmin, self).get_urls()
+        
+        my_urls = patterns('',
+            url(r'^(.+)/image_list.js$', 
+                self._wrap(self.get_image_list), 
+                name=self._view_name('image_list')),
+        )
+
+        return my_urls + urls
+
+               
     def save_model(self, request, obj, form, change):
         super(PageAdmin, self).save_model(request, obj, form, change)
         
