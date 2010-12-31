@@ -9,7 +9,7 @@ from django.contrib.sitemaps import ping_google
 
 from tinymce.widgets import TinyMCE
 
-from sorl.thumbnail.admin import AdminImageMixin
+from sorl.thumbnail.admin import AdminImageWidget, ImageField
 
 from models import Menu, Submenu, Page, PageImage
 from forms import MenuAdminForm
@@ -17,7 +17,13 @@ from forms import MenuAdminForm
 logger = logging.getLogger('simplesite')
 
 
-class PageImageInline(AdminImageMixin, admin.TabularInline):
+class PageImageInline(admin.TabularInline):
+    formfield_overrides = {
+        ImageField: {
+            'widget': AdminImageWidget,
+        }
+    }
+
     model = PageImage
     extra = 1
 
