@@ -2,9 +2,12 @@ from django.db import models
 
 from django.utils.translation import ugettext_lazy as _
 
+from sorl.thumbnail import ImageField
+
 from metadata.models import DateAbstractBase, \
                             TitleAbstractBase, \
                             SlugAbstractBase
+
 
 class Page(TitleAbstractBase, DateAbstractBase):
     """ Class representing a page with title and contents """
@@ -30,7 +33,14 @@ class Page(TitleAbstractBase, DateAbstractBase):
         
         if self.submenu_set.exists():
             return self.submenu_set.all()[0].get_absolute_url()
-            
+
+
+class PageImage(TitleAbstractBase):
+    """ Image related to a page. """
+    
+    page = models.ForeignKey(Page)
+    image = ImageField(verbose_name=_('image'), upload_to='page_images')
+
 
 def get_next_ordering(cls):
     ordering = cls.objects.aggregate(models.Max('ordering'))['ordering__max']
