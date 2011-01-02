@@ -1,6 +1,7 @@
 import logging
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 
 from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -35,11 +36,21 @@ class PageImageInline(admin.TabularInline):
 class PageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
     inlines = (PageImageInline, )
     
-    formfield_overrides = {
-        # TODO: Make this dynamic.
-        models.TextField: {'widget': TinyMCE(mce_attrs={'external_image_list': '/admin/simplesite/page/1/image_list.js'}), },
-    }
-    
+    def get_form(self, request, obj=None, **kwargs):
+        """ Override the form widget for the content field with a TinyMCE
+            field which uses a dynamically assigned image list. """
+        
+        form = super(PageAdmin, self).get_form(request, obj=None, **kwargs)
+
+        image_list_url = reverse('admin:simplesite_page_image_list',\
+                                 args=(obj.pk, )) 
+        
+        form.base_fields['content'].widget = TinyMCE(mce_attrs={'external_image_list_url': image_list_url})
+        
+        return form
+        
+        
+        
     def get_image_list(self, request, object_id):
         """ Get a list of available images for this page for TinyMCE to
             refer to.
