@@ -27,7 +27,6 @@ class PageTranslationInline(TinyMCEAdminMixin, TranslationInline):
         """ Override the form widget for the content field with a TinyMCE
             field which uses a dynamically assigned image list. """
         
-        print 'belletje a'
         formset = super(TinyMCEAdminMixin, self).get_formset(request, obj=None, **kwargs)
         
         formset.form.base_fields['content'].widget = self.get_tinymce_widget(obj)
