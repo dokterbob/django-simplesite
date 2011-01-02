@@ -2,11 +2,15 @@ from django.db import models
 
 from django.utils.translation import ugettext_lazy as _
 
+from sorl.thumbnail import ImageField
+
 from metadata.models import DateAbstractBase, \
                             TitleAbstractBase, \
                             SlugAbstractBase
 
-from multilingual_model.models import MultilingualModel, MultilingualTranslation
+from multilingual_model.models import MultilingualModel, \
+                                      MultilingualTranslation
+
 
 class PageTranslation(MultilingualTranslation, TitleAbstractBase):
     class Meta:
@@ -14,6 +18,7 @@ class PageTranslation(MultilingualTranslation, TitleAbstractBase):
 
     parent = models.ForeignKey('Page', related_name='translations')
     content = models.TextField(verbose_name=_('content'))
+
 
 class Page(MultilingualModel, DateAbstractBase):
     """ Class representing a page with title and contents """
@@ -36,7 +41,14 @@ class Page(MultilingualModel, DateAbstractBase):
         
         if self.submenu_set.exists():
             return self.submenu_set.all()[0].get_absolute_url()
-            
+
+
+class PageImage(TitleAbstractBase):
+    """ Image related to a page. """
+    
+    page = models.ForeignKey(Page)
+    image = ImageField(verbose_name=_('image'), upload_to='page_images')
+
 
 def get_next_ordering(cls):
     ordering = cls.objects.aggregate(models.Max('ordering'))['ordering__max']
@@ -57,11 +69,13 @@ class MenuBase(MultilingualModel, SlugAbstractBase):
     class Meta:
         abstract = True
 
+
 class MenuTranslation(MultilingualTranslation, TitleAbstractBase):
     class Meta:
         unique_together = ('parent', 'language_code')
 
     parent = models.ForeignKey('Menu', related_name='translations')
+
 
 class Menu(MenuBase):
     """ Main menu """
