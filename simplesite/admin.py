@@ -66,21 +66,26 @@ class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
 
 
 class TinyMCEAdminMixin(object):
-    def get_formset(self, request, obj=None, **kwargs):
-        """ Override the form widget for the content field with a TinyMCE
-            field which uses a dynamically assigned image list. """
-
-        formset = super(TinyMCEAdminMixin, self).get_formset(request, obj=None, **kwargs)
-        
+    @staticmethod
+    def get_tinymce_widget(obj=None):
+        """ Return the appropriate TinyMCE widget. """
         if obj:
             image_list_url = reverse('admin:simplesite_page_image_list',\
                                      args=(obj.pk, ))
 
-            formset.form.base_fields['content'].widget = \
+            return \
                TinyMCE(mce_attrs={'external_image_list_url': image_list_url})
         else:
-            formset.form.base_fields['content'].widget = \
-               TinyMCE()
+            return TinyMCE()
+    
+    def get_formset(self, request, obj=None, **kwargs):
+        """ Override the form widget for the content field with a TinyMCE
+            field which uses a dynamically assigned image list. """
+        
+        print 'belletje a'
+        formset = super(TinyMCEAdminMixin, self).get_formset(request, obj=None, **kwargs)
+        
+        formset.form.base_fields['content'].widget = self.get_tinymce_widget(obj)
 
         return formset
 
