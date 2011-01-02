@@ -76,6 +76,10 @@ class TinyMCEAdminMixin(object):
             return TinyMCE()
 
 
+class PageImageInline(AdminInlineImageMixin, admin.TabularInline):
+    model = PageImage
+    extra = 1
+
     def get_form(self, request, obj=None, **kwargs):
         """ Override the form widget for the content field with a TinyMCE
             field which uses a dynamically assigned image list. """
@@ -87,11 +91,6 @@ class TinyMCEAdminMixin(object):
         form.base_fields['content'].widget = self.get_tinymce_widget(obj)
 
         return form
-
-
-class PageImageInline(AdminInlineImageMixin, admin.TabularInline):
-    model = PageImage
-    extra = 1
 
 
 class PageAdmin(TinyMCEAdminMixin, BasePageAdmin):
