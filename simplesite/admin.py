@@ -59,13 +59,7 @@ class PageImageInline(admin.TabularInline):
 
 
 class PageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
-    #list_display = ('get_title',)
     inlines = (PageTranslationInline, PageImageInline, )
-
-    def get_title(self, obj):
-        return obj.title
-    get_title.short_description = 'Title'
-        
         
     def get_image_list(self, request, object_id):
         """ Get a list of available images for this page for TinyMCE to

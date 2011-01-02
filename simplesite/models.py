@@ -25,7 +25,7 @@ class Page(MultilingualModel, DateAbstractBase):
 
     publish = models.BooleanField(verbose_name=_('publish'),
                                   default=True, db_index=True)
-
+    
     class Meta:
         verbose_name = _('page')
         verbose_name_plural = _('pages')
@@ -41,7 +41,13 @@ class Page(MultilingualModel, DateAbstractBase):
         
         if self.submenu_set.exists():
             return self.submenu_set.all()[0].get_absolute_url()
-
+    
+    def __unicode__(self):
+        try:
+            return self.title
+        
+        except ValueError:
+            return 'Untitled'
 
 class PageImage(TitleAbstractBase):
     """ Image related to a page. """
