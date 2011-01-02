@@ -12,7 +12,7 @@ from django.conf.urls.defaults import patterns, url
 from tinymce.widgets import TinyMCE
 from tinymce.views import render_to_image_list
 
-from sorl.thumbnail.admin import AdminImageWidget, ImageField
+from sorl.thumbnail.admin import AdminInlineImageMixin
 
 from models import Menu, Submenu, Page, PageImage, MenuTranslation, \
                    SubmenuTranslation, PageTranslation
@@ -47,13 +47,7 @@ class PageTranslationInline(TranslationInline):
 
 
 
-class PageImageInline(admin.TabularInline):
-    formfield_overrides = {
-        ImageField: {
-            'widget': AdminImageWidget,
-        }
-    }
-
+class PageImageInline(AdminInlineImageMixin, admin.TabularInline):
     model = PageImage
     extra = 1
 
