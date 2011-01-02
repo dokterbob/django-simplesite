@@ -24,14 +24,53 @@ from multilingual_model.admin import TranslationInline
 logger = logging.getLogger('simplesite')
 
 
-class PageTranslationInline(TranslationInline):
-    model = PageTranslation
+class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
+    def get_image_list(self, request, object_id):
+        """ Get a list of available images for this page for TinyMCE to
+            refer to.
+        """
+        object = self._getobj(request, object_id)
+        
+        images = object.pageimage_set.all()
+        image_list = [(unicode(obj), obj.image.url) for obj in images]
+        
+        return render_to_image_list(image_list)
+     
+    
+    def get_urls(self):
+        urls = super(BasePageAdmin, self).get_urls()
+        
+        my_urls = patterns('',
+            url(r'^(.+)/image_list.js$', 
+                self._wrap(self.get_image_list), 
+                name=self._view_name('image_list')),
+        )
 
+        return my_urls + urls
+
+    
+    def save_model(self, request, obj, form, change):
+        super(BasePageAdmin, self).save_model(request, obj, form, change)
+        
+        if not settings.DEBUG and obj.publish:
+            try:
+                ping_google()
+            except Exception:
+                # Bare 'except' because we could get a variety
+                # of HTTP-related exceptions.
+                logger.warning('Error pinging Google while saving %s.' \
+                                    % obj)
+        else:
+            logger.debug('Not pinging Google while saving %s, DEBUG=True.' \
+                            % obj)
+
+
+class TinyMCEAdminMixin(object):
     def get_formset(self, request, obj=None, **kwargs):
         """ Override the form widget for the content field with a TinyMCE
             field which uses a dynamically assigned image list. """
 
-        formset = super(PageTranslationInline, self).get_formset(request, obj=None, **kwargs)
+        formset = super(TinyMCEAdminMixin, self).get_formset(request, obj=None, **kwargs)
         
         if obj:
             image_list_url = reverse('admin:simplesite_page_image_list',\
@@ -46,53 +85,17 @@ class PageTranslationInline(TranslationInline):
         return formset
 
 
+class PageTranslationInline(TinyMCEAdminMixin, TranslationInline):
+    model = PageTranslation
+
 
 class PageImageInline(AdminInlineImageMixin, admin.TabularInline):
     model = PageImage
     extra = 1
 
 
-class PageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
+class PageAdmin(BasePageAdmin):
     inlines = (PageTranslationInline, PageImageInline, )
-        
-    def get_image_list(self, request, object_id):
-        """ Get a list of available images for this page for TinyMCE to
-            refer to.
-        """
-        object = self._getobj(request, object_id)
-        
-        images = object.pageimage_set.all()
-        image_list = [(unicode(obj), obj.image.url) for obj in images]
-        
-        return render_to_image_list(image_list)
-     
-    
-    def get_urls(self):
-        urls = super(PageAdmin, self).get_urls()
-        
-        my_urls = patterns('',
-            url(r'^(.+)/image_list.js$', 
-                self._wrap(self.get_image_list), 
-                name=self._view_name('image_list')),
-        )
-
-        return my_urls + urls
-
-    
-    def save_model(self, request, obj, form, change):
-        super(PageAdmin, self).save_model(request, obj, form, change)
-        
-        if not settings.DEBUG and obj.publish:
-            try:
-                ping_google()
-            except Exception:
-                # Bare 'except' because we could get a variety
-                # of HTTP-related exceptions.
-                logger.warning('Error pinging Google while saving %s.' \
-                                    % obj)
-        else:
-            logger.debug('Not pinging Google while saving %s, DEBUG=True.' \
-                            % obj)
 
 
 class MenuTranslationInline(TranslationInline):
