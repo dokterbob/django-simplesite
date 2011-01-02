@@ -10,8 +10,9 @@ from django.contrib.sitemaps import ping_google
 from django.conf.urls.defaults import patterns, url
 
 from tinymce.widgets import TinyMCE
+from tinymce.views import render_to_image_list
 
-from sorl.thumbnail.admin import AdminImageWidget, ImageField
+from sorl.thumbnail.admin import AdminInlineImageMixin
 
 from models import Menu, Submenu, Page, PageImage
 from forms import MenuAdminForm
@@ -19,38 +20,8 @@ from utils import ExtendibleModelAdminMixin
 
 logger = logging.getLogger('simplesite')
 
-from tinymce.views import render_to_image_list
 
-
-class PageImageInline(admin.TabularInline):
-    formfield_overrides = {
-        ImageField: {
-            'widget': AdminImageWidget,
-        }
-    }
-
-    model = PageImage
-    extra = 1
-
-
-class PageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
-    inlines = (PageImageInline, )
-    
-    def get_form(self, request, obj=None, **kwargs):
-        """ Override the form widget for the content field with a TinyMCE
-            field which uses a dynamically assigned image list. """
-        
-        form = super(PageAdmin, self).get_form(request, obj=None, **kwargs)
-
-        image_list_url = reverse('admin:simplesite_page_image_list',\
-                                 args=(obj.pk, )) 
-        
-        form.base_fields['content'].widget = TinyMCE(mce_attrs={'external_image_list_url': image_list_url})
-        
-        return form
-        
-        
-        
+class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
     def get_image_list(self, request, object_id):
         """ Get a list of available images for this page for TinyMCE to
             refer to.
@@ -64,7 +35,7 @@ class PageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
      
     
     def get_urls(self):
-        urls = super(PageAdmin, self).get_urls()
+        urls = super(BasePageAdmin, self).get_urls()
         
         my_urls = patterns('',
             url(r'^(.+)/image_list.js$', 
@@ -76,7 +47,7 @@ class PageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
 
                
     def save_model(self, request, obj, form, change):
-        super(PageAdmin, self).save_model(request, obj, form, change)
+        super(BasePageAdmin, self).save_model(request, obj, form, change)
         
         if not settings.DEBUG and obj.publish:
             try:
@@ -91,10 +62,47 @@ class PageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
                             % obj)
 
 
+class TinyMCEAdminMixin(object):
+    @staticmethod
+    def get_tinymce_widget(obj=None):
+        """ Return the appropriate TinyMCE widget. """
+        if obj:
+            image_list_url = reverse('admin:simplesite_page_image_list',\
+                                     args=(obj.pk, ))
+
+            return \
+               TinyMCE(mce_attrs={'external_image_list_url': image_list_url})
+        else:
+            return TinyMCE()
+
+
+    def get_form(self, request, obj=None, **kwargs):
+        """ Override the form widget for the content field with a TinyMCE
+            field which uses a dynamically assigned image list. """
+
+        print 'belletje b'
+        
+        form = super(TinyMCEAdminMixin, self).get_form(request, obj=None, **kwargs)
+        
+        form.base_fields['content'].widget = self.get_tinymce_widget(obj)
+
+        return form
+
+
+class PageImageInline(AdminInlineImageMixin, admin.TabularInline):
+    model = PageImage
+    extra = 1
+
+
+class PageAdmin(TinyMCEAdminMixin, BasePageAdmin):
+    inlines = (PageImageInline, )
+
+
 class SubmenuInline(admin.StackedInline):
     model = Submenu
     extra = 0
-    
+
+
 class BaseMenuAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
     list_display_links = ('title',)
