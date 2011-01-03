@@ -29,5 +29,4 @@ class ExtendibleModelAdminMixin(object):
     def _view_name(self, name):
         info = self.model._meta.app_label, self.model._meta.module_name, name
         
-        print info
         return '%s_%s_%s' % info
