@@ -23,6 +23,10 @@ from settings import PAGEIMAGE_SIZE
 
 
 class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
+    """ Base class for PageAdmin with things in common for both the
+        multilingual as well as the 'normal' branch. """
+    
+    
     def get_image_list(self, request, object_id):
         """ Get a list of available images for this page for TinyMCE to
             refer to. If the setting exists, scale the image to the default
