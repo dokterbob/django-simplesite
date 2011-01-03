@@ -24,7 +24,11 @@ from settings import PAGEIMAGE_SIZE
 
 class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
     """ Base class for PageAdmin with things in common for both the
-        multilingual as well as the 'normal' branch. """
+        multilingual as well as the 'normal' branch. 
+        
+        Note: using relative links to URLs and pages requires the
+        setting 'convert_urls' : False for django-tinymce.
+    """
     
     
     def get_image_list(self, request, object_id):
