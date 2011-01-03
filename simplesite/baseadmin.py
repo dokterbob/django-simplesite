@@ -14,23 +14,34 @@ from django.conf.urls.defaults import patterns, url
 from tinymce.widgets import TinyMCE
 from tinymce.views import render_to_image_list
 
+from sorl.thumbnail import get_thumbnail
+
 from utils import ExtendibleModelAdminMixin
 from forms import MenuAdminForm
 from models import Page
+from settings import PAGEIMAGE_SIZE
 
 
 class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
     def get_image_list(self, request, object_id):
         """ Get a list of available images for this page for TinyMCE to
-            refer to.
+            refer to. If the setting exists, scale the image to the default
+            size specified in `PAGEIMAGE_SIZE`.
         """
         object = self._getobj(request, object_id)
         
-        images = object.pageimage_set.all()
-        image_list = [(unicode(obj), obj.image.url) for obj in images]
+        page_images = object.pageimage_set.all()
         
+        image_list = []
+        for obj in page_images:
+            image = obj.image
+            
+            if PAGEIMAGE_SIZE:
+                image = get_thumbnail(image, PAGEIMAGE_SIZE)
+            
+            image_list.append((unicode(obj), image.url))
+            
         return render_to_image_list(image_list)
-     
     
     def get_urls(self):
         urls = super(BasePageAdmin, self).get_urls()
