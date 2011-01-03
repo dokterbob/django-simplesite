@@ -17,8 +17,11 @@ TODO
 ----
 * Add a setting for excluding certain URL patterns (ie. static files)
   from the simplesite middleware.
+* Make all elements produced by the `RequestContextProcessor` lazy so we never
+  produce redundant database hits.
 * Write unittests for both master as well as the multilingual-model branches.
 * Find a workflow in which merging of multilingual and master branches becomes
   a lot easier.
 * PEP8 cleanup.
 * Write decent documentation.
+* Add image size to `<img>` tags produced by TinyMCE.
