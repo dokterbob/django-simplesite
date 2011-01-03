@@ -10,6 +10,7 @@ from simplesite.views import page as page_view
 
 logger = logging.getLogger('simplesite')
 
+
 class MenuAdminForm(forms.ModelForm):
     def clean(self):
         page = self.cleaned_data['page']

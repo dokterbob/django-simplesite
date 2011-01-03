@@ -49,6 +49,7 @@ class Page(MultilingualModel, DateAbstractBase):
         except ValueError:
             return 'Untitled'
 
+
 class PageImage(TitleAbstractBase):
     """ Image related to a page. """
     
@@ -100,6 +101,7 @@ class Menu(MenuBase):
         from django.core.urlresolvers import reverse
         return reverse('menu', urlconf='simplesite.urls',
                        kwargs={'menu_slug':self.slug})
+
 
 class SubmenuTranslation(MultilingualTranslation, TitleAbstractBase):
    class Meta:
