@@ -24,7 +24,10 @@ def menu(request):
         logger.debug('menu url matched: args=%s, kwargs=%s', args, kwargs)
 
         menu_slug = kwargs.get('menu_slug')
+        
         if menu_slug:
+            # TODO: This call right here should be made lazy, but would require
+            # a wrapper catching exceptions
             menu_obj = menu_list.get(slug=menu_slug)
 
             logger.debug('menu=%s', menu_obj)
@@ -38,15 +41,19 @@ def menu(request):
             submenu_slug = kwargs.get('submenu_slug')
                         
             if submenu_slug:
+                # TODO: This call right here should be made lazy, but would require
+                # a wrapper catching exceptions
                 submenu_obj = submenu_list.get(slug=submenu_slug)
 
                 logger.debug('submenu=%s', submenu_obj)
                 
                 menu_dict.update({'submenu_current': submenu_obj})
                 
+                # TODO: This one should be lazy as well
                 if submenu_obj.page:
                     menu_dict.update({'page_current': submenu_obj.page})
             else:
+                # TODO: This one should be lazy as well
                 if menu_obj.page:
                     menu_dict.update({'page_current': menu_obj.page})
                 

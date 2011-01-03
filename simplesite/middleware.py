@@ -12,6 +12,8 @@ class SimplesiteFallbackMiddleware(object):
         if response.status_code != 404:
             return response # No need to check for a flatpage for non-404 responses.
         
+        # TODO: ignore certain URL's here based on regular expressions and/or
+        # mimetype.
         logger.debug('Normal processing returned a 404, resort to simplesite')
         try:
             return page(request)
