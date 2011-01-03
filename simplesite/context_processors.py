@@ -6,6 +6,7 @@ from simplesite.models import Menu, Submenu
 
 logger = logging.getLogger('simplesite')
 
+
 def menu(request):
     """ This function puts into the RequestContext:
         - `menu_current`      The current menu (if any)
