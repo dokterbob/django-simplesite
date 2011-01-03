@@ -38,21 +38,15 @@ class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
         """
         object = self._getobj(request, object_id)
         
-        # Only look for images if we have a pk to relate them to
-        if object.pk:
-            page_images = object.pageimage_set.all()
+        page_images = object.pageimage_set.all()
+    
+        image_list = []
+        for obj in page_images:
+            image = obj.image
+            if PAGEIMAGE_SIZE:
+                image = get_thumbnail(image, PAGEIMAGE_SIZE)
         
-            image_list = []
-            for obj in page_images:
-                image = obj.image
-            
-                if PAGEIMAGE_SIZE:
-                    image = get_thumbnail(image, PAGEIMAGE_SIZE)
-            
-                image_list.append((unicode(obj), image.url))
-        
-        else:
-            image_list = []
+            image_list.append((unicode(obj), image.url))
         
         return render_to_image_list(image_list)
     
