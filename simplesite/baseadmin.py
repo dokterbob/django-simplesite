@@ -56,16 +56,16 @@ class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
         
         return render_to_image_list(image_list)
     
-    def get_link_list(self, request, object_id):
-        """ Get a list of pages and their URL's, if applicable. """
-    
-        object = self._getobj(request, object_id)
+    def get_link_list(self, request):
+        """ Get a list of pages and their URL's.
+            TODO: Filter out the current page, if applicable.
+        """
+                
+        pages = self.model.objects.filter(publish=True)
         
-        pages = object.__class__.objects.filter(publish=True)
-        
-        # Exclude the current page, if it exists at all
-        if object.pk:
-            pages = pages.exclude(pk=object.pk)
+        # # Exclude the current page, if it exists at all
+        # if object.pk:
+        #     pages = pages.exclude(pk=object.pk)
         
         link_list = []
         for page in pages:
@@ -83,7 +83,7 @@ class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
             url(r'^(.+)/image_list.js$', 
                 self._wrap(self.get_image_list), 
                 name=self._view_name('image_list')),
-            url(r'^(.+)/link_list.js$', 
+            url(r'^link_list.js$', 
                 self._wrap(self.get_link_list), 
                 name=self._view_name('link_list')),
         )
@@ -111,18 +111,18 @@ class TinyMCEAdminMixin(object):
     @staticmethod
     def get_tinymce_widget(obj=None):
         """ Return the appropriate TinyMCE widget. """
+
+        link_list_url = reverse('admin:simplesite_page_link_list')
+
         if obj:
             image_list_url = reverse('admin:simplesite_page_image_list',\
                                      args=(obj.pk, ))
-
-            link_list_url = reverse('admin:simplesite_page_link_list',\
-                                     args=(obj.pk, ))
-
             return \
                TinyMCE(mce_attrs={'external_image_list_url': image_list_url,
                                   'external_link_list_url': link_list_url})
         else:
-            return TinyMCE()
+            return \
+               TinyMCE(mce_attrs={'external_link_list_url': link_list_url})
 
 
 class BaseMenuAdmin(admin.ModelAdmin):
