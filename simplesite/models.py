@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 from django.db import models
 
 from django.utils.translation import ugettext_lazy as _
@@ -44,10 +48,15 @@ class Page(MultilingualModel, DateAbstractBase):
     
     def __unicode__(self):
         try:
-            return self.title
+            title = self.title
         
         except ValueError:
-            return 'Untitled'
+            logger.debug('ValueError rendering unicode for Page object.')
+        
+	if not title:
+            title = u'Untitled'
+        
+        return title
 
 
 class PageImage(TitleAbstractBase):
