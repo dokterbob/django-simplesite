@@ -20,7 +20,7 @@ def menu(request):
     menu_dict = {'menu_list': menu_list.filter(visible=True) }
                  
     try:    
-        view, args, kwargs = resolve(request.path, urlconf='simplesite.urls')
+        view, args, kwargs = resolve(request.path_info, urlconf='simplesite.urls')
         logger.debug('menu url matched: args=%s, kwargs=%s', args, kwargs)
 
         menu_slug = kwargs.get('menu_slug')
