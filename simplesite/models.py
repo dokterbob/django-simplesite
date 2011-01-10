@@ -51,10 +51,12 @@ class Page(MultilingualModel, DateAbstractBase):
             title = self.title
         
         except ValueError:
-            logger.debug('ValueError rendering unicode for Page object.')
+            logger.warn('ValueError rendering unicode for Page object.')
+            
+            title = None
         
-	if not title:
-            title = u'Untitled'
+        if not title:
+                title = u'Untitled'
         
         return title
 
