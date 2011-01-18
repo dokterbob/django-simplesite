@@ -1,5 +1,4 @@
 import logging
-
 logger = logging.getLogger(__name__)
 
 from django.db import models
@@ -47,18 +46,7 @@ class Page(MultilingualModel, DateAbstractBase):
             return self.submenu_set.all()[0].get_absolute_url()
     
     def __unicode__(self):
-        try:
-            title = self.title
-        
-        except ValueError:
-            logger.warn('ValueError rendering unicode for Page object.')
-            
-            title = None
-        
-        if not title:
-                title = u'Untitled'
-        
-        return title
+        return self.unicode_wrapper('title')
 
 
 class PageImage(TitleAbstractBase):
