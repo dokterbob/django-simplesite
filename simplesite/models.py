@@ -52,7 +52,7 @@ class Page(MultilingualModel, DateAbstractBase):
 class PageImage(TitleAbstractBase):
     """ Image related to a page. """
     
-    page = models.ForeignKey(Page)
+    page = models.ForeignKey(Page, verbose_name=_('page'))
     image = ImageField(verbose_name=_('image'), upload_to='page_images')
 
 
@@ -70,10 +70,15 @@ class MenuBase(MultilingualModel, SlugAbstractBase):
     visible = models.BooleanField(verbose_name=_('visible'),
                                   default=True, db_index=True,
                                   help_text=_('Show in menu listings?'))
-    page = models.ForeignKey(Page, null=True, blank=True)
+    page = models.ForeignKey(Page, null=True, blank=True,
+                             verbose_name=_('page'))
 
     class Meta:
         abstract = True
+
+    def __unicode__(self):
+        return self.unicode_wrapper('title')
+
 
 
 class MenuTranslation(MultilingualTranslation, TitleAbstractBase):
@@ -122,7 +127,7 @@ class Submenu(MenuBase):
         ordering = ['ordering', ]
         unique_together = ('slug', 'menu')
 
-    menu = models.ForeignKey(Menu)
+    menu = models.ForeignKey(Menu, verbose_name=_('parent menu'))
 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
