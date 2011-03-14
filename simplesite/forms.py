@@ -37,4 +37,6 @@ class MenuAdminForm(forms.ModelForm):
                         item would point nowhere. Please select a page for it \
                         to link to.'))
 
+        # Be sure to return the original value
+        return page
 
