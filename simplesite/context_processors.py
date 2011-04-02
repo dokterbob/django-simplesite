@@ -17,7 +17,12 @@ def menu(request):
     
     menu_list = Menu.objects.filter()
     
-    menu_dict = {'menu_list': menu_list.filter(visible=True) }
+    menu_dict = {'menu_list': menu_list.filter(visible=True),
+                 'menu_current': None,
+                 'submenu_current': None,
+                 'page_current': None,
+                 'submenu_list': None,
+                 }
                  
     try:    
         view, args, kwargs = resolve(request.path_info, urlconf='simplesite.urls')
