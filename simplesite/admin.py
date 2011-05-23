@@ -26,9 +26,9 @@ class PageTranslationInline(TinyMCEAdminMixin, TranslationInline):
     def get_formset(self, request, obj=None, **kwargs):
         """ Override the form widget for the content field with a TinyMCE
             field which uses a dynamically assigned image list. """
-        
+
         formset = super(TinyMCEAdminMixin, self).get_formset(request, obj=None, **kwargs)
-        
+
         formset.form.base_fields['content'].widget = self.get_tinymce_widget(obj)
 
         return formset
@@ -41,6 +41,11 @@ class PageImageInline(AdminInlineImageMixin, admin.TabularInline):
 
 class PageAdmin(BasePageAdmin):
     inlines = (PageTranslationInline, PageImageInline, )
+    list_display = ('admin_title', 'publish')
+
+    def admin_title(self, obj):
+        return unicode(obj)
+    admin_title.short_description = _('title')
 
 
 class MenuTranslationInline(TranslationInline):
@@ -70,7 +75,7 @@ class MenuAdmin(BaseMenuAdmin):
 class SubmenuAdmin(BaseMenuAdmin):
     list_display = ('ordering', 'slug', 'visible', 'admin_page', 'admin_menu')
     list_filter = ('visible', 'menu', )
-     
+
     def admin_menu(self, obj):
         return u'<a href="../menu/%d/">%s</a>' % (obj.menu.id, obj.menu)
     admin_menu.short_description = Menu._meta.verbose_name
