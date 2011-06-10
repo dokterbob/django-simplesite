@@ -29,6 +29,13 @@ class PageImageInline(AdminInlineImageMixin, admin.TabularInline):
 
 class PageAdmin(TinyMCEAdminMixin, BasePageAdmin):
     inlines = (PageImageInline, )
+    list_display = ('page_title','publish',)
+    
+    def page_title(self, obj):
+        return u'%s' % (obj.title)
+    page_title.short_description = 'title'
+    page_title.allow_tags = True
+    
 
     def get_form(self, request, obj=None, **kwargs):
         """ Override the form widget for the content field with a TinyMCE
@@ -47,8 +54,9 @@ class SubmenuInline(admin.StackedInline):
 
 
 class MenuAdmin(BaseMenuAdmin):
-    list_display = ('ordering', 'title', 'slug', 'visible', 'admin_page', 'admin_submenu')
+    list_display = ('title', 'slug', 'ordering', 'visible', 'admin_page', 'admin_submenu')
     list_filter = ('visible', )
+    filter_horizontal = ('images',)
 
     def admin_submenu(self, obj):
         if obj.submenu_set.exists():

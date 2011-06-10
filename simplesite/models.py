@@ -7,6 +7,9 @@ from sorl.thumbnail import ImageField
 from metadata.models import DateAbstractBase, \
                             TitleAbstractBase, \
                             SlugAbstractBase
+                            
+from images.models import Image
+
 
 
 class Page(TitleAbstractBase, DateAbstractBase):
@@ -68,6 +71,9 @@ class Menu(MenuBase):
     ordering = models.SmallIntegerField(verbose_name=_('ordering'),
                                         default=lambda: get_next_ordering(Menu),
                                         db_index=True)
+    
+    images =  models.ManyToManyField(Image, blank=True, null=True, verbose_name=_('images'))
+
 
     class Meta:
         verbose_name = _('menu item')
