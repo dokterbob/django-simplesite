@@ -17,7 +17,8 @@ def menu(request):
     
     menu_list = Menu.objects.filter()
     
-    menu_dict = {'menu_list': menu_list.filter(visible=True),
+    menu_dict = {'alt_menu_list': menu_list.filter(visible=False),
+                 'menu_list': menu_list.filter(visible=True),
                  'menu_current': None,
                  'submenu_current': None,
                  'page_current': None,
