@@ -1,19 +1,24 @@
 import logging
+logger = logging.getLogger('simplesite')
 
-from simplesite.views import page
 from django.http import Http404
 from django.conf import settings
 
-logger = logging.getLogger('simplesite')
+from simplesite.views import page
+from simplesite.utils import ignore_path
 
 
 class SimplesiteFallbackMiddleware(object):
     def process_response(self, request, response):
         if response.status_code != 404:
             return response # No need to check for a flatpage for non-404 responses.
-        
-        # TODO: ignore certain URL's here based on regular expressions and/or
-        # mimetype.
+
+        if ignore_path(request.path_info):
+            logger.debug('Ignoring path %s in middleware according to MIDDLEWARE_IGNORE_PATHS.',
+                         request.path_info)
+
+            return response
+
         logger.debug('Normal processing returned a 404, resort to simplesite')
         try:
             return page(request)

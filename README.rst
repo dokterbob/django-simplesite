@@ -130,11 +130,21 @@ Installation
 	    ...
 	)
 
+#)  Optionally, exclude some URI's regexp's (ie. sitemap or admin) from being
+    treated by the middleware or the context processor::
+
+	import re
+	SIMPLESITE_IGNORE_PATHS = (
+	    re.compile('^/admin/'),
+	    re.compile('^/robots.txt$'),
+	    re.compile('^/favicon.ico$'),
+	    re.compile('^/__debug__/'),
+	    re.compile('^/sitemap\.xml$'),
+	)
+
 TODO
 ====
 * Add one additional level of navigational depth, a 'subsubmenu'.
-* Add a setting for excluding certain URL patterns (ie. static files)
-  from the simplesite middleware.
 * Make all elements produced by the `RequestContextProcessor` lazy so we never
   produce redundant database hits.
 * Write unittests for both master as well as the multilingual-model branches.

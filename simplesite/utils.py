@@ -31,3 +31,14 @@ class ExtendibleModelAdminMixin(object):
         info = self.model._meta.app_label, self.model._meta.module_name, name
         
         return '%s_%s_%s' % info
+
+
+from simplesite.settings import IGNORE_PATHS
+
+def ignore_path(path):
+    """ Whether or not to ignore a specific path. """
+    for regex in IGNORE_PATHS:
+        if regex.search(path):
+            return True
+    return False
+
