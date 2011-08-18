@@ -10,7 +10,7 @@ Features
   up a menu/submenu structure for which some menu's and submenu's might refer
   to other app's views and some might refer to 'pages' in simplesite.
 * Validation of navigational structure: when creating menu or submenu object,
-  the validity of the resulting URI's is automatically validated, preventing
+  the validity of the resulting URI's is automatically checked, preventing
   the creation of broken links.
 * Rather than implementing a full tree structure, a 2-level menu/submenu
   hierarchy has been chosen as to maintain simplicity and to help content
