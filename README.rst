@@ -25,6 +25,7 @@ Features
 * Fully translatable content using the `django-multilingual-model <https://github.com/dokterbob/django-multilingual-model>`_ app.
 * A simple mechanism allowing for template overrides for specific menu's or
   submenu's.
+* Integration with Django's `sitemaps <https://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/>`_.
 
 
 Requirements
@@ -110,6 +111,24 @@ Installation
 	templates/simplesite/<menu_slug>/page.html
 	templates/simplesite/<menu_slug>/<submenu_slug>/page.html
 
+#)  Optionally, add simplesite to your Django sitemaps.
+
+    Make sure you `install the sitemaps framework <https://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/#installation>`_
+    first. After that, add something like this to your `urls.py`::
+
+	from simplesite import sitemaps as simplesite_sitemaps
+	sitemaps = {
+	    'menu': simplesite_sitemaps.MenuSitemap,
+	    'submenu': simplesite_sitemaps.SubmenuSitemap,
+	    'pages': simplesite_sitemaps.PageSitemap
+	}
+	
+	urlpatterns = patterns('',
+	    ...
+	    # Sitemaps
+	    (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
+	    ...
+	)
 
 TODO
 ====
