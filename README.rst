@@ -72,9 +72,11 @@ Installation
     This will make the following variables available from within
     any view using a `RequestContext <https://docs.djangoproject.com/en/dev/ref/templates/api/#subclassing-context-requestcontext>`_ for template rendering:
 
-    *   `page_current`: the current `Page` object
-    *   `menu_current`: the `Menu` object pertaining to the current page
-    *   `submenu_current`: the `Submenu` object pertaining to the current page
+    * `menu_current`: The current `Menu` object (if any)
+    * `submenu_current`: The current `Submenu` object (if any)
+    * `menu_list`: A list of visible main menu items
+    * `submenu_list`: A list of visible submenu items for the current menu
+
 
 #)  Setup the `SimplesiteFallbackMiddleware` to go and look for a page related
     to the menu whenever a 404 is raised::
