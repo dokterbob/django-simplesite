@@ -37,7 +37,8 @@ Installation
 #)  Install the package and its dependencies straight from Github and link
     them into your `PYTHONPATH`::
 
-	pip install -e git+http://github.com/dokterbob/django-metadata.git#egg=django-metadata \
+	pip install django-tinymce \
+	    -e git+http://github.com/dokterbob/django-metadata.git#egg=django-metadata \
 	    -e git+http://github.com/dokterbob/django-multilingual-model.git#egg=django-multilingual-model \
 	    -e git+http://github.com/dokterbob/django-simplesite.git@multilingual-model#egg=django-simplesite \ 
 
@@ -50,6 +51,7 @@ Installation
 
 	INSTALLED_APPS = (
 	    ...
+	    'tinymce',
 	    'metadata',
 	    'multilingual_model',
 	    ...
