@@ -115,9 +115,9 @@ class TinyMCEAdminMixin(object):
     def get_tinymce_widget(obj=None):
         """ Return the appropriate TinyMCE widget. """
 
-        link_list_url = reverse('admin:simplesite_page_link_list', args=(obj.pk, ))
-
+        link_list_url = None
         if obj:
+            link_list_url = reverse('admin:simplesite_page_link_list', args=(obj.pk, ))
             image_list_url = reverse('admin:simplesite_page_image_list',\
                                      args=(obj.pk, ))
             return \
