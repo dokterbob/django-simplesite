@@ -50,10 +50,12 @@ class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
         
         return render_to_image_list(image_list)
     
-    def get_link_list(self, request):
+    def get_link_list(self, request, object_id):
         """ Get a list of pages and their URL's.
             TODO: Filter out the current page, if applicable.
         """
+
+        object = self._getobj(request, object_id)
                 
         pages = self.model.objects.filter(publish=True)
         
@@ -67,7 +69,14 @@ class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
             
             if url:
                 link_list.append((page.title, url))
-        
+
+
+        page_files = object.pagefile_set.all()
+
+        for obj in page_files:
+            file = obj.file
+            link_list.append((unicode(obj), file.url))
+         
         return render_to_link_list(link_list)
 
     def get_urls(self):
@@ -77,7 +86,7 @@ class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
             url(r'^(.+)/image_list.js$', 
                 self._wrap(self.get_image_list), 
                 name=self._view_name('image_list')),
-            url(r'^link_list.js$', 
+            url(r'^(.+)/link_list.js$', 
                 self._wrap(self.get_link_list), 
                 name=self._view_name('link_list')),
         )
@@ -106,7 +115,7 @@ class TinyMCEAdminMixin(object):
     def get_tinymce_widget(obj=None):
         """ Return the appropriate TinyMCE widget. """
 
-        link_list_url = reverse('admin:simplesite_page_link_list')
+        link_list_url = reverse('admin:simplesite_page_link_list', args=(obj.pk, ))
 
         if obj:
             image_list_url = reverse('admin:simplesite_page_image_list',\

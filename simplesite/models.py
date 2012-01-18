@@ -45,6 +45,13 @@ class PageImage(TitleAbstractBase):
     image = ImageField(verbose_name=_('image'), upload_to='page_images')
 
 
+class PageFile(TitleAbstractBase):
+    """ File related to an page. """
+    
+    article = models.ForeignKey(Article)
+    file = models.FileField(verbose_name=_('file'), upload_to='page_files')
+
+
 def get_next_ordering(cls):
     ordering = cls.objects.aggregate(models.Max('ordering'))['ordering__max']
     if ordering:

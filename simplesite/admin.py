@@ -18,7 +18,7 @@ from tinymce.views import render_to_image_list
 
 from sorl.thumbnail.admin import AdminInlineImageMixin
 
-from models import Menu, Submenu, Page, PageImage
+from models import Menu, Submenu, Page, PageImage, PageFile
 from baseadmin import BasePageAdmin, BaseMenuAdmin, TinyMCEAdminMixin
 
 
@@ -27,8 +27,13 @@ class PageImageInline(AdminInlineImageMixin, admin.TabularInline):
     extra = 1
 
 
+class PageFileInline(admin.TabularInline):
+    model = ArticleFile
+    extra = 1
+
+
 class PageAdmin(TinyMCEAdminMixin, BasePageAdmin):
-    inlines = (PageImageInline, )
+    inlines = (PageImageInline, PageFileInline)
     list_display = ('page_title','publish',)
     
     def page_title(self, obj):
@@ -36,7 +41,6 @@ class PageAdmin(TinyMCEAdminMixin, BasePageAdmin):
     page_title.short_description = 'title'
     page_title.allow_tags = True
     
-
     def get_form(self, request, obj=None, **kwargs):
         """ Override the form widget for the content field with a TinyMCE
             field which uses a dynamically assigned image list. """
