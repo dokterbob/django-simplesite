@@ -48,7 +48,7 @@ class PageImage(TitleAbstractBase):
 class PageFile(TitleAbstractBase):
     """ File related to an page. """
     
-    article = models.ForeignKey(Article)
+    page = models.ForeignKey(Page)
     file = models.FileField(verbose_name=_('file'), upload_to='page_files')
 
 

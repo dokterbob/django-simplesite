@@ -28,7 +28,7 @@ class PageImageInline(AdminInlineImageMixin, admin.TabularInline):
 
 
 class PageFileInline(admin.TabularInline):
-    model = ArticleFile
+    model = PageFile
     extra = 1
 
 
