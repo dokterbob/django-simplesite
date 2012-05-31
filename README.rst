@@ -27,8 +27,11 @@ Installation
     
         pip install -e https://github.com/dokterbob/django-simplesite.git#egg=simplesite
 
+
 #)  Make sure all dependencies, as mentioned in `requirements.txt` are
-    installed.
+    installed::
+
+        pip install -r requirements.txt
 
 #)  Add `simplesite` to `INSTALLED_APPS` in `settings.py` and make sure that
     the dependencies `django-tinymce` and `django-multilingual-model` are   

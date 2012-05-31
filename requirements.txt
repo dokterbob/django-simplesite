@@ -1,4 +1,5 @@
 surlex
 django-tinymce
+-e git://github.com/dokterbob/django-multilingual-model.git#egg=django-multilingual-model
 -e git://github.com/dokterbob/django-metadata.git#egg=django-metadata
 sorl-thumbnail
