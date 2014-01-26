@@ -9,7 +9,7 @@ from django.db import models
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib import admin
 from django.contrib.sitemaps import ping_google
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 from tinymce.widgets import TinyMCE
 from tinymce.views import render_to_image_list, render_to_link_list
