@@ -1,6 +1,6 @@
 from surlex.dj import surl
 
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns
 
 
 urlpatterns = patterns('simplesite.views',
