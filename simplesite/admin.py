@@ -4,17 +4,13 @@ logger = logging.getLogger('simplesite')
 
 from sorl.thumbnail.admin import AdminInlineImageMixin
 
-from django.conf import settings
-from django.core.urlresolvers import reverse
-
-from django.db import models
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from django.contrib import admin
-from django.contrib.sitemaps import ping_google
-from django.conf.urls import patterns, url
 
-from models import Menu, Submenu, Page, PageImage, MenuTranslation, \
-                   SubmenuTranslation, PageTranslation
+from models import (
+    Menu, Submenu, Page, PageImage, MenuTranslation,
+    SubmenuTranslation, PageTranslation
+)
 from baseadmin import BasePageAdmin, BaseMenuAdmin, TinyMCEAdminMixin
 
 from multilingual_model.admin import TranslationInline
@@ -27,7 +23,8 @@ class PageTranslationInline(TinyMCEAdminMixin, TranslationInline):
         """ Override the form widget for the content field with a TinyMCE
             field which uses a dynamically assigned image list. """
 
-        formset = super(TinyMCEAdminMixin, self).get_formset(request, obj=None, **kwargs)
+        formset = super(TinyMCEAdminMixin, self).get_formset(
+            request, obj=None, **kwargs)
 
         formset.form.base_fields['content'].widget = self.get_tinymce_widget(obj)
 
