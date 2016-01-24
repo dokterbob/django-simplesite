@@ -5,8 +5,6 @@ logger = logging.getLogger('simplesite')
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from django.db import models
-from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib import admin
 from django.contrib.sitemaps import ping_google
 from django.conf.urls import patterns, url
@@ -29,7 +27,6 @@ class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
         Note: using relative links to URLs and pages requires the
         setting 'convert_urls' : False for django-tinymce.
     """
-
 
     def get_image_list(self, request, object_id):
         """ Get a list of available images for this page for TinyMCE to
@@ -102,11 +99,11 @@ class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
             except Exception:
                 # Bare 'except' because we could get a variety
                 # of HTTP-related exceptions.
-                logger.warning('Error pinging Google while saving %s.' \
-                                    % obj)
+                logger.warning(
+                    'Error pinging Google while saving %s.' % obj)
         else:
-            logger.debug('Not pinging Google while saving %s, DEBUG=True.' \
-                            % obj)
+            logger.debug(
+                'Not pinging Google while saving %s, DEBUG=True.' % obj)
 
 
 class TinyMCEAdminMixin(object):
@@ -117,14 +114,13 @@ class TinyMCEAdminMixin(object):
         link_list_url = None
         if obj:
             link_list_url = reverse('admin:simplesite_page_link_list', args=(obj.pk, ))
-            image_list_url = reverse('admin:simplesite_page_image_list',\
-                                     args=(obj.pk, ))
-            return \
-               TinyMCE(mce_attrs={'external_image_list_url': image_list_url,
-                                  'external_link_list_url': link_list_url})
+            image_list_url = reverse(
+                'admin:simplesite_page_image_list', args=(obj.pk, ))
+            return TinyMCE(
+                mce_attrs={'external_image_list_url': image_list_url,
+                           'external_link_list_url': link_list_url})
         else:
-            return \
-               TinyMCE(mce_attrs={'external_link_list_url': link_list_url})
+            return TinyMCE(mce_attrs={'external_link_list_url': link_list_url})
 
 
 class BaseMenuAdmin(admin.ModelAdmin):
@@ -140,4 +136,3 @@ class BaseMenuAdmin(admin.ModelAdmin):
     admin_page.allow_tags = True
 
     form = MenuAdminForm
-
