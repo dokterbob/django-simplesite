@@ -1,93 +1,163 @@
 =================
 django-simplesite
 =================
-
 A simple pseudo-static site app with menu, submenu and pages.
+-------------------------------------------------------------
 
 Features
---------
-* Fully integrated with TinyMCE using the `django-tinymce` package.
+========
+* A decoupling of navigational structure and content - this allows for setting
+  up a menu/submenu structure for which some menu's and submenu's might refer
+  to other app's views and some might refer to 'pages' in simplesite.
+* Validation of navigational structure: when creating menu or submenu object,
+  the validity of the resulting URI's is automatically checked, preventing
+  the creation of broken links.
+* Rather than implementing a full tree structure, a 2-level menu/submenu
+  hierarchy has been chosen as to maintain simplicity and to help content
+  managers by forcing them to make data accessible using a minimal
+  amount of navigation.
+* Fully integrated TinyMCE WYSIWYG-editor using the `django-tinymce <http://code.google.com/p/django-tinymce/>`_ package.
 * Inline image support and cross-linking pages from within TinyMCE.
 * A `SimplesiteFallbackMiddleware` allowing for simplesite to be used
-  similar to Django's own flatpages app.
-* A `menu` RequestContextProcessor making a menu- and submenu-list and with it
-  the current page available in the request context.
-* All content is fully and transparently translatable to any number of languages, using the `django-multilingual-model` application.
+  similar to the `FlatpageFallbackMiddleWare <https://docs.djangoproject.com/en/1.3/ref/contrib/flatpages/#django.contrib.flatpages.middleware.FlatpageFallbackMiddleware>`_ of Django's own flatpages. This allows one to override specific parts of the URI space which would otherwise be covered by other apps.
+* A `menu` RequestContext processor making a menu- and submenu-list and
+  with it the current page available in the request context.
+* Fully translatable content using the `django-multilingual-model <https://github.com/dokterbob/django-multilingual-model>`_ app.
+* A simple mechanism allowing for template overrides for specific menu's or
+  submenu's.
+* Integration with Django's `sitemaps <https://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/>`_.
+
 
 Requirements
-------------
-Please refer to `requirements.txt <http://github.com/dokterbob/django-newsletter/blob/master/requirements.txt>`_ for an updated list of required packes.
+============
+Please refer to `requirements.txt <http://github.com/dokterbob/django-simplesite/blob/master/requirements.txt>`_ for an updated list of required packes.
 
 Installation
-------------
-#)  First of all it is recommended that you use 
+============
+#)  Install the package and its dependencies straight from Github and link
+    them into your `PYTHONPATH`::
+
+	pip install django-tinymce \
+	    -e git+http://github.com/dokterbob/django-metadata.git#egg=django-metadata \
+	    -e git+http://github.com/dokterbob/django-multilingual-model.git#egg=django-multilingual-model \
+	    -e git+http://github.com/dokterbob/django-simplesite.git@multilingual-model#egg=django-simplesite \
+
+    (In either case it is recommended that you use
     `VirtualEnv <http://pypi.python.org/pypi/virtualenv>`_ in order to
-    keep your Python environment somewhat clean. Wihtin your environment, it
-    is easy to install `django-simplesite` straight from GitHub::
-    
-        pip install -e https://github.com/dokterbob/django-simplesite.git#egg=simplesite
+    keep your Python environment somewhat clean.)
 
-#)  Make sure all dependencies, as mentioned in `requirements.txt` are
-    installed.
+#)  Add simplesite and to ``INSTALLED_APPS`` in settings.py and make sure that
+    the dependencies django-tinymce and django-extensions are there as well::
 
-#)  Add `simplesite` to `INSTALLED_APPS` in `settings.py` and make sure that
-    the dependencies `django-tinymce` and `django-multilingual-model` are   
-    there as well::
-    
 	INSTALLED_APPS = (
 	    ...
 	    'tinymce',
-	    'sorl.thumbnail',
+	    'metadata',
+	    'multilingual_model',
 	    ...
 	    'simplesite',
 	    ...
 	)
 
-#)  Add the fallback middleware to `MIDDLEWAER_CLASSES` in `settings.py`, so
-    404 errors will be caught (similar to Django's native 
-    `flatpages  app <http://docs.djangoproject.com/en/dev/ref/contrib/flatpages/>`_)::
+#)  Update the database structure::
 
-	MIDDLEWARE_CLASSES = (
-		...
-		'simplesite.middleware.SimplesiteFallbackMiddleware',
-		...
-	)
+	./manage.py syncdb
 
-#) In order to have the menu/submenu structure available in every template
-   rendered with a `RequestContext <http://docs.djangoproject.com/en/dev/ref/templates/api/#subclassing-context-requestcontext>`_, 
-   add the simplesite menu context processor.
-
-   This exposes the following context variables in your template's context:
-    
-    * `menu_current`: The current menu (if any)
-    * `submenu_current`: The current submenu (if any)
-    * `menu_list`: A list of visible main menu items
-    * `submenu_list`: A list of visible submenu items for the current menu
-   
-   To enable this context processor, make sure it's listed in  `TEMPLATE_CONTEXT_PROCESSORS` in `settings.py`::
+#)  Add the `menu` context processor to Django's default
+    `TEMPLATE_CONTEXT_PROCESSORS`::
 
 	TEMPLATE_CONTEXT_PROCESSORS = (
-		...
-		'simplesite.context_processors.menu',
-		...
+	    ...
+	    'simplesite.context_processors.menu',
+	    ...
 	)
 
+    This will make the following variables available from within
+    any view using a `RequestContext <https://docs.djangoproject.com/en/dev/ref/templates/api/#subclassing-context-requestcontext>`_ for template rendering:
 
-#) Now you're all setup! 
+    * `menu_current`: The current `Menu` object (if any)
+    * `submenu_current`: The current `Submenu` object (if any)
+    * `menu_list`: A list of visible main menu items
+    * `submenu_list`: A list of visible submenu items for the current menu
 
-   From the admin you can now make a menu/submenu
-   structure for your site, which can be used to render menu's, breadcrumbs
-   and other navigational elements. Also, pages can be associated to menu's
-   and submenu's - allowing for an easy way to create semi-static pages
-   in your site.
+
+#)  Setup the `SimplesiteFallbackMiddleware` to go and look for a page related
+    to the menu whenever a 404 is raised::
+
+	MIDDLEWARE_CLASSES = (
+	    ...
+	    'simplesite.middleware.SimplesiteFallbackMiddleware',
+	)
+
+    Note that the order of `MIDDLEWARE_CLASSES` matters. Generally, you can
+    put `SimplesiteFallbackMiddleware` at the end of the list, because it’s a
+    last resort.
+
+    Alternately, you can simply use simplesite's page view directly from your
+    `urls.py` by adding the following line::
+
+	urlpatterns = patterns('',
+	    ...
+	    (r'^', include('simplesite.urls'))
+	)
+
+    Make sure you add this line at the end of your `urlpatterns`, otherwise it
+    will make all other URI's inaccessible.
+
+#)  Setup (at least) the page template `simplesite/page.html`, which receives
+    the context variables from the `RequestContext` described above.
+
+#)  Optionally, override the basic page template for menu's and submenu's,
+    according to the following template::
+
+	templates/simplesite/<menu_slug>/page.html
+	templates/simplesite/<menu_slug>/<submenu_slug>/page.html
+
+#)  If you make use of Django's `i18n_patterns <https://docs.djangoproject.com/es/1.9/topics/i18n/translation/#django.conf.urls.i18n.i18n_patterns>`_
+    make sure to configure the `i18n_urls` as URLConf for simplesite by
+    adding the following setting::
+
+    SIMPLESITE_URLCONF = 'simplesite.i18n_urls'
+
+#)  Optionally, add simplesite to your Django sitemaps.
+
+    Make sure you `install the sitemaps framework <https://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/#installation>`_
+    first. After that, add something like this to your `urls.py`::
+
+	from simplesite import sitemaps as simplesite_sitemaps
+	sitemaps = {
+	    'menu': simplesite_sitemaps.MenuSitemap,
+	    'submenu': simplesite_sitemaps.SubmenuSitemap,
+	    'pages': simplesite_sitemaps.PageSitemap
+	}
+
+	urlpatterns = patterns('',
+	    ...
+	    # Sitemaps
+	    (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
+	    ...
+	)
+
+#)  Optionally, exclude some URI's regexp's (ie. sitemap or admin) from being
+    treated by the middleware or the context processor::
+
+	import re
+	SIMPLESITE_IGNORE_PATHS = (
+	    re.compile('^/admin/'),
+	    re.compile('^/robots.txt$'),
+	    re.compile('^/favicon.ico$'),
+	    re.compile('^/__debug__/'),
+	    re.compile('^/sitemap\.xml$'),
+	)
 
 TODO
----- 
-* Links lists should refer to menu and submenu items - not to pages. Some little stupid thing I've simply forgotten.
-* Add a setting for excluding certain URL patterns (ie. static files)
-  from the simplesite middleware.
+====
+* Add one additional level of navigational depth, a 'subsubmenu'.
+* Make all elements produced by the `RequestContextProcessor` lazy so we never
+  produce redundant database hits.
 * Write unittests for both master as well as the multilingual-model branches.
 * Find a workflow in which merging of multilingual and master branches becomes
   a lot easier.
 * PEP8 cleanup.
-* Write better and more documentation.
+* Write decent documentation.
+* Add image size to `<img>` tags produced by TinyMCE.

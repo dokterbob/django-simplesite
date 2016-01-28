@@ -7,8 +7,10 @@ from sorl.thumbnail import ImageField
 from metadata.models import DateAbstractBase, \
                             TitleAbstractBase, \
                             SlugAbstractBase
-                            
+
 from images.models import Image
+
+from simplesite.settings import URLCONF
 
 
 
@@ -27,27 +29,27 @@ class Page(TitleAbstractBase, DateAbstractBase):
 
     def get_absolute_url(self):
         """ Yield the first related menu item. """
-        
+
         if not self.publish:
             return None
 
         if self.menu_set.exists():
             return self.menu_set.all()[0].get_absolute_url()
-        
+
         if self.submenu_set.exists():
             return self.submenu_set.all()[0].get_absolute_url()
 
 
 class PageImage(TitleAbstractBase):
     """ Image related to a page. """
-    
-    page = models.ForeignKey(Page)
+
+    page = models.ForeignKey(Page, verbose_name=_('page'))
     image = ImageField(verbose_name=_('image'), upload_to='page_images')
 
 
 class PageFile(TitleAbstractBase):
     """ File related to an page. """
-    
+
     page = models.ForeignKey(Page)
     file = models.FileField(verbose_name=_('file'), upload_to='page_files')
 
@@ -78,7 +80,7 @@ class Menu(MenuBase):
     ordering = models.SmallIntegerField(verbose_name=_('ordering'),
                                         default=lambda: get_next_ordering(Menu),
                                         db_index=True)
-    
+
     images =  models.ManyToManyField(Image, blank=True, null=True, verbose_name=_('images'))
 
 
@@ -90,7 +92,7 @@ class Menu(MenuBase):
 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
-        return reverse('menu', urlconf='simplesite.urls',
+        return reverse('menu', urlconf=URLCONF,
                        kwargs={'menu_slug':self.slug})
 
 
@@ -111,7 +113,7 @@ class Submenu(MenuBase):
 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
-        return reverse('submenu', urlconf='simplesite.urls',
+        return reverse('submenu', urlconf=URLCONF,
                        kwargs={'menu_slug':self.menu.slug,
                                'submenu_slug':self.slug})
 
