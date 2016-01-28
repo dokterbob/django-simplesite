@@ -14,6 +14,8 @@ from metadata.models import DateAbstractBase, \
 from multilingual_model.models import MultilingualModel, \
                                       MultilingualTranslation
 
+from simplesite.settings import URLCONF
+
 
 class PageTranslation(MultilingualTranslation, TitleAbstractBase):
     class Meta:
@@ -28,30 +30,30 @@ class Page(MultilingualModel, DateAbstractBase):
 
     publish = models.BooleanField(verbose_name=_('publish'),
                                   default=True, db_index=True)
-    
+
     class Meta:
         verbose_name = _('page')
         verbose_name_plural = _('pages')
 
     def get_absolute_url(self):
         """ Yield the first related menu item. """
-        
+
         if not self.publish:
             return None
 
         if self.menu_set.exists():
             return self.menu_set.all()[0].get_absolute_url()
-        
+
         if self.submenu_set.exists():
             return self.submenu_set.all()[0].get_absolute_url()
-    
+
     def __unicode__(self):
         return self.unicode_wrapper('title')
 
 
 class PageImage(TitleAbstractBase):
     """ Image related to a page. """
-    
+
     page = models.ForeignKey(Page, verbose_name=_('page'))
     image = ImageField(verbose_name=_('image'), upload_to='page_images')
 
@@ -103,7 +105,7 @@ class Menu(MenuBase):
 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
-        return reverse('menu', urlconf='simplesite.urls',
+        return reverse('menu', urlconf=URLCONF,
                        kwargs={'menu_slug':self.slug})
 
 
@@ -131,7 +133,7 @@ class Submenu(MenuBase):
 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
-        return reverse('submenu', urlconf='simplesite.urls',
+        return reverse('submenu', urlconf=URLCONF,
                        kwargs={'menu_slug':self.menu.slug,
                                'submenu_slug':self.slug})
 

@@ -5,6 +5,7 @@ from django.core.urlresolvers import resolve, Resolver404
 
 from simplesite.models import Menu, Submenu
 from simplesite.utils import ignore_path
+from simplesite.settings import URLCONF
 
 
 def menu(request):
@@ -30,7 +31,7 @@ def menu(request):
                  }
 
     try:
-        view, args, kwargs = resolve(request.path_info, urlconf='simplesite.urls')
+        view, args, kwargs = resolve(request.path_info, urlconf=URLCONF)
         logger.debug('menu url matched: args=%s, kwargs=%s', args, kwargs)
 
         menu_slug = kwargs.get('menu_slug')

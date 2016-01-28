@@ -20,7 +20,7 @@ Features
 * Inline image support and cross-linking pages from within TinyMCE.
 * A `SimplesiteFallbackMiddleware` allowing for simplesite to be used
   similar to the `FlatpageFallbackMiddleWare <https://docs.djangoproject.com/en/1.3/ref/contrib/flatpages/#django.contrib.flatpages.middleware.FlatpageFallbackMiddleware>`_ of Django's own flatpages. This allows one to override specific parts of the URI space which would otherwise be covered by other apps.
-* A `menu` RequestContext processor making a menu- and submenu-list and 
+* A `menu` RequestContext processor making a menu- and submenu-list and
   with it the current page available in the request context.
 * Fully translatable content using the `django-multilingual-model <https://github.com/dokterbob/django-multilingual-model>`_ app.
 * A simple mechanism allowing for template overrides for specific menu's or
@@ -40,9 +40,9 @@ Installation
 	pip install django-tinymce \
 	    -e git+http://github.com/dokterbob/django-metadata.git#egg=django-metadata \
 	    -e git+http://github.com/dokterbob/django-multilingual-model.git#egg=django-multilingual-model \
-	    -e git+http://github.com/dokterbob/django-simplesite.git@multilingual-model#egg=django-simplesite \ 
+	    -e git+http://github.com/dokterbob/django-simplesite.git@multilingual-model#egg=django-simplesite \
 
-    (In either case it is recommended that you use 
+    (In either case it is recommended that you use
     `VirtualEnv <http://pypi.python.org/pypi/virtualenv>`_ in order to
     keep your Python environment somewhat clean.)
 
@@ -61,7 +61,7 @@ Installation
 
 #)  Update the database structure::
 
-	./manage.py syncdb 
+	./manage.py syncdb
 
 #)  Add the `menu` context processor to Django's default
     `TEMPLATE_CONTEXT_PROCESSORS`::
@@ -70,7 +70,7 @@ Installation
 	    ...
 	    'simplesite.context_processors.menu',
 	    ...
-	)    
+	)
 
     This will make the following variables available from within
     any view using a `RequestContext <https://docs.djangoproject.com/en/dev/ref/templates/api/#subclassing-context-requestcontext>`_ for template rendering:
@@ -90,7 +90,7 @@ Installation
 	)
 
     Note that the order of `MIDDLEWARE_CLASSES` matters. Generally, you can
-    put `SimplesiteFallbackMiddleware` at the end of the list, because it’s a    
+    put `SimplesiteFallbackMiddleware` at the end of the list, because it’s a
     last resort.
 
     Alternately, you can simply use simplesite's page view directly from your
@@ -113,6 +113,12 @@ Installation
 	templates/simplesite/<menu_slug>/page.html
 	templates/simplesite/<menu_slug>/<submenu_slug>/page.html
 
+#)  If you make use of Django's `i18n_patterns <https://docs.djangoproject.com/es/1.9/topics/i18n/translation/#django.conf.urls.i18n.i18n_patterns>`_
+    make sure to configure the `i18n_urls` as URLConf for simplesite by
+    adding the following setting::
+
+    SIMPLESITE_URLCONF = 'simplesite.i18n_urls'
+
 #)  Optionally, add simplesite to your Django sitemaps.
 
     Make sure you `install the sitemaps framework <https://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/#installation>`_
@@ -124,7 +130,7 @@ Installation
 	    'submenu': simplesite_sitemaps.SubmenuSitemap,
 	    'pages': simplesite_sitemaps.PageSitemap
 	}
-	
+
 	urlpatterns = patterns('',
 	    ...
 	    # Sitemaps
