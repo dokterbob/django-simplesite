@@ -1,12 +1,11 @@
 import logging
-
-from django import forms
-
-from django.utils.translation import ugettext_lazy as _
-
 logger = logging.getLogger('simplesite')
 
-from django.core.urlresolvers import resolve, Resolver404
+from django import forms
+from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import resolve, reverse, Resolver404
+
+from simplesite.settings import URLCONF
 
 
 class MenuAdminForm(forms.ModelForm):
@@ -22,14 +21,13 @@ class MenuAdminForm(forms.ModelForm):
         if not page and slug:
             menu = cleaned_data.get('menu', None)
             if menu:
-                path = '/%s/' % menu.slug
+                reverse_args = (menu.slug, slug)
             else:
-                path = '/'
+                reverse_args = (slug, )
 
-            path += '%s/' % slug
+            path = reverse('simplesite.views.page', urlconf=URLCONF, args=reverse_args)
 
-            logger.debug('Checking whether the path %s yields a view.',
-                         path)
+            logger.debug('Checking whether the path %s yields a view.', path)
 
             # This should always work.
             try:
