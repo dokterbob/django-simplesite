@@ -35,10 +35,10 @@ class MenuAdminForm(forms.ModelForm):
             try:
                 view, args, kwargs = resolve(path)
             except Resolver404:
-                error_message = \
-                    _('Without a page, this menu \
-                       item would point nowhere. Please select a page for it \
-                       to link to.')
+                error_message = _(
+                    'Without a page, this menu item would point nowhere.'
+                    'Please select a page for it to link to.'
+                )
                 self._errors['page'] = self.error_class([error_message])
 
                 # Remove invalid data
