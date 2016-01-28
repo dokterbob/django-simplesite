@@ -4,9 +4,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from sorl.thumbnail import ImageField
 
-from metadata.models import DateAbstractBase, \
-                            TitleAbstractBase, \
-                            SlugAbstractBase
+from metadata.models import (
+    DateAbstractBase, TitleAbstractBase, SlugAbstractBase
+)
 
 from images.models import Image
 
@@ -93,7 +93,7 @@ class Menu(MenuBase):
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
         return reverse('menu', urlconf=URLCONF,
-                       kwargs={'menu_slug':self.slug})
+                       kwargs={'menu_slug': self.slug})
 
 
 class Submenu(MenuBase):
@@ -114,6 +114,5 @@ class Submenu(MenuBase):
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
         return reverse('submenu', urlconf=URLCONF,
-                       kwargs={'menu_slug':self.menu.slug,
-                               'submenu_slug':self.slug})
-
+                       kwargs={'menu_slug': self.menu.slug,
+                               'submenu_slug': self.slug})
