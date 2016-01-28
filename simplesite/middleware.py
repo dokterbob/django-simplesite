@@ -11,11 +11,13 @@ from simplesite.utils import ignore_path
 class SimplesiteFallbackMiddleware(object):
     def process_response(self, request, response):
         if response.status_code != 404:
-            return response # No need to check for a flatpage for non-404 responses.
+            # No need to check for a flatpage for non-404 responses.
+            return response
 
         if ignore_path(request.path_info):
-            logger.debug('Ignoring path %s in middleware according to MIDDLEWARE_IGNORE_PATHS.',
-                         request.path_info)
+            logger.debug(
+                'Ignoring path %s in middleware according to MIDDLEWARE_IGNORE_PATHS.',
+                request.path_info)
 
             return response
 
@@ -33,5 +35,5 @@ class SimplesiteFallbackMiddleware(object):
             else:
                 # Fail silently, but do logging
                 logger.exception('Something went wrong trying to serve a page')
-            
+
             return response
