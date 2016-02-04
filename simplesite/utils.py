@@ -2,7 +2,7 @@
 
 from functools import update_wrapper
 
-from django.contrib.admin.util import unquote
+from django.contrib.admin.utils import unquote
 from django.utils.encoding import force_text
 
 
