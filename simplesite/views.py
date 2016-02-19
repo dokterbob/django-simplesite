@@ -6,6 +6,8 @@ from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
+from .context_processors import menu as menu_processor
+
 
 def page(request, menu_slug=None, submenu_slug=None):
     """ This is, basically, a wrapper around the
@@ -25,7 +27,9 @@ def page(request, menu_slug=None, submenu_slug=None):
         fully available, as in other pages within the site.
     """
 
-    context = RequestContext(request)
+    # Manually call this here to assure values are available
+    # (rendering of context is now only done *after* binding a template)
+    context = menu_processor(request)
 
     page = context.get('page_current')
     if not (page and page.publish):
@@ -45,4 +49,4 @@ def page(request, menu_slug=None, submenu_slug=None):
 
     logger.debug('Searching for templates in %s' % template_names)
 
-    return render_to_response(template_names, context)
+    return render_to_response(template_names, RequestContext(request))

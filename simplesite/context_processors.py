@@ -21,6 +21,7 @@ def menu(request):
                      request.path_info)
         return {}
 
+    logger.error('TEst')
     menu_list = Menu.objects.filter()
 
     menu_dict = {
@@ -71,11 +72,13 @@ def menu(request):
                 if menu_obj.page:
                     menu_dict.update({'page_current': menu_obj.page})
 
-    except (Resolver404, Menu.DoesNotExist, Submenu.DoesNotExist) as e:
-        # Resolver404: the URL pattern doesn't match any URL
-        # Menu.DoesNotExist: the menu_slug found in the URL match any menu
-        # Submenu.DoesNotExist: the submenu_slug found doesn't match any submenu
+    except Resolver404:
+        logger.debug("The URL pattern doesn't match any URL.")
 
-        logger.debug('Current menu item not identified, error: %s' % e)
+    except Menu.DoesNotExist:
+        logger.debug("The menu_slug found in the URL match any menu.")
+
+    except Submenu.DoesNotExist:
+        logger.debug("The submenu_slug found doesn't match any submenu.")
 
     return menu_dict
