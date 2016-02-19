@@ -21,7 +21,6 @@ def menu(request):
                      request.path_info)
         return {}
 
-    logger.error('TEst')
     menu_list = Menu.objects.filter()
 
     menu_dict = {
