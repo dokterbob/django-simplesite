@@ -23,12 +23,13 @@ def menu(request):
 
     menu_list = Menu.objects.filter()
 
-    menu_dict = {'menu_list': menu_list.filter(visible=True),
-                 'menu_current': None,
-                 'submenu_current': None,
-                 'page_current': None,
-                 'submenu_list': None,
-                 }
+    menu_dict = {
+        'menu_list': menu_list.filter(visible=True),
+        'menu_current': None,
+        'submenu_current': None,
+        'page_current': None,
+        'submenu_list': None,
+    }
 
     try:
         view, args, kwargs = resolve(request.path_info, urlconf=URLCONF)
@@ -46,8 +47,10 @@ def menu(request):
             # Find the corresponding submenu items
             submenu_list = Submenu.objects.filter(menu__slug=menu_slug)
 
-            menu_dict.update({'menu_current': menu_obj,
-                              'submenu_list': submenu_list.filter(visible=True)})
+            menu_dict.update({
+                'menu_current': menu_obj,
+                'submenu_list': submenu_list.filter(visible=True)
+            })
 
             submenu_slug = kwargs.get('submenu_slug')
 
