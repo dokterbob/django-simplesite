@@ -1,7 +1,5 @@
 import logging
 
-logger = logging.getLogger('simplesite')
-
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
@@ -18,6 +16,8 @@ from utils import ExtendibleModelAdminMixin
 from forms import MenuAdminForm
 from models import Page
 from settings import PAGEIMAGE_SIZE
+
+logger = logging.getLogger('simplesite')
 
 
 class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
