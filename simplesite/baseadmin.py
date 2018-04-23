@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 
 from django.contrib import admin
 from django.contrib.sitemaps import ping_google
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from tinymce.widgets import TinyMCE
 from tinymce.views import render_to_image_list, render_to_link_list
@@ -78,17 +78,14 @@ class BasePageAdmin(admin.ModelAdmin, ExtendibleModelAdminMixin):
     def get_urls(self):
         urls = super(BasePageAdmin, self).get_urls()
 
-        my_urls = patterns('',
+        return [
             url(r'^(.+)/image_list.js$',
                 self._wrap(self.get_image_list),
                 name=self._view_name('image_list')),
             url(r'^(.+)/link_list.js$',
                 self._wrap(self.get_link_list),
                 name=self._view_name('link_list')),
-        )
-
-        return my_urls + urls
-
+        ] + urls
 
     def save_model(self, request, obj, form, change):
         super(BasePageAdmin, self).save_model(request, obj, form, change)
